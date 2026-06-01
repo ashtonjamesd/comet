@@ -19,7 +19,8 @@ sudo cp cinit "$INSTALL_DIR/cinit"
 
 # install the header so users can #include <cinit.h> in build.c
 mkdir -p "$HEADER_DIR"
-cp src/cinit.h "$HEADER_DIR/cinit.h"
+sudo mkdir -p /usr/local/include
+sudo cp src/cinit.h /usr/local/include/cinit.h
 
 # cleanup
 rm -rf "$TMP"

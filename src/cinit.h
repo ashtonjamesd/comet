@@ -160,15 +160,15 @@ void cinit_build_with(Project *p, Compiler compiler) {
 
 static char *get_optimize_name(OptimizeLevel optimize) {
     switch (optimize) {
-        case GCC_O0: return "O0";
-        case GCC_O1: return "O1";
-        case GCC_O2: return "O2";
-        case GCC_O3: return "O3";
-        case GCC_Os: return "Os";
-        case GCC_Oz: return "Oz";
+        case GCC_O0: return "-O0";
+        case GCC_O1: return "-O1";
+        case GCC_O2: return "-O2";
+        case GCC_O3: return "-O3";
+        case GCC_Os: return "-Os";
+        case GCC_Oz: return "-Oz";
         case GCC_OFast: return "-Ofast";
-        case GCC_Og: return "Og";
-        default: return "O0";
+        case GCC_Og: return "-Og";
+        default: return "-O0";
     }
 }
 
@@ -273,14 +273,18 @@ bool setup_build_c(char *path) {
     }
 
     char *content = 
-        "#include <stdio.h>\n"
+        "#include <cinit.h>\n"
         "\n"
-        "void cinit_build(void) {\n"
+        "void cinit_build_project(void) {\n"
         "   Project p = cinit_project();\n"
         "   cinit_build_with(&p, GCC);\n\n"
         "   cinit_optimize_with(&p, GCC_O3);\n"
         "   cinit_use_directory(&p, \"src\");\n\n"
         "   cinit_build(&p);\n"
+        "}\n\n"
+        "int main(void) {\n"
+        "   cinit_build_project();\n"
+        "   return 0;\n"
         "}\n";
 
     fwrite(

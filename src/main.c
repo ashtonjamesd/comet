@@ -13,18 +13,42 @@ int help() {
     return 0;
 }
 
+int build() {
+    int built = system("gcc build.c -o build");
+    if (!built) {
+        fprintf(stderr, "failed to build the build file.");
+        return 1;
+    }
+
+    int ran = system("./build");
+    if (!ran) {
+        fprintf(stderr, "failed to run the build file.");
+        return 1;
+    }
+
+    return 0;
+}
+
+int run() {
+    int built = build();
+    if (!built) return 1;
+
+    return 0;
+}
 
 int main(int argc, char *argv[]) {
-    // Project p = cinit_project();
-    // cinit_build_with(&p, GCC);
-    // cinit_optimize_with(&p, GCC_O3);
-
-    // cinit_use_directory(&p, "src");
-    // cinit_build(&p);
-
     if (argc < 2) {
-        fprintf(stderr, "usage: cinit <name>\n");
+        fprintf(stderr, "usage: cinit <command>\n");
         return 1;
+    }
+
+    char *command = argv[1];
+    if (strcmp(command, "build") == 0) {
+        return build();
+    }
+
+    if (strcmp(command, "run") == 0) {
+        return run();
     }
 
     bool quiet = false;
