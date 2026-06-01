@@ -20,13 +20,13 @@ int version() {
 }
 
 int build() {
-    int built = system("gcc build.c -o build");
+    int built = system("gcc build.c -o project_build");
     if (!built) {
         fprintf(stderr, "failed to build the build file.");
         return 1;
     }
 
-    int ran = system("./build");
+    int ran = system("./project_build");
     if (!ran) {
         fprintf(stderr, "failed to run the build file.");
         return 1;
