@@ -110,6 +110,7 @@ Project cinit_project() {
         .srcs_count = 0,
         .srcs_capacity = 1,
         .compiler = GCC,
+        .exe_name = "output",
     };
 
     return p;
