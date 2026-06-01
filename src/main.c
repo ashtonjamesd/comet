@@ -36,38 +36,7 @@ int run() {
     return 0;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "usage: cinit <command>\n");
-        return 1;
-    }
-
-    char *command = argv[1];
-    if (strcmp(command, "build") == 0) {
-        return build();
-    }
-
-    if (strcmp(command, "run") == 0) {
-        return run();
-    }
-
-    bool quiet = false;
-    for (int i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "--quiet") == 0) {
-            quiet = true;
-        }
-
-        if (strcmp(argv[i], "help") == 0) return help();
-        if (strcmp(argv[i], "--help") == 0) return help();
-        if (strcmp(argv[i], "-h") == 0) return help();
-    }
-
-    ProjectScaffolder ps = {
-        .quiet = quiet,
-    };
-
-    char *name = argv[1];
-
+int new(ProjectScaffolder ps, char *name) {
     #define SRC "src"
     #define BUILD "build"
     #define TEST "test"
@@ -97,6 +66,42 @@ int main(int argc, char *argv[]) {
     if (!setup_cinit_c(LIB "/" CINIT_C)) return 1;
     
     printf("\ncompleted c project scaffold!\n\n");
+
+    return 0;
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "usage: cinit <command>\n");
+        return 1;
+    }
+
+    bool quiet = false;
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "--quiet") == 0) {
+            quiet = true;
+        }
+
+        if (strcmp(argv[i], "help") == 0) return help();
+        if (strcmp(argv[i], "--help") == 0) return help();
+        if (strcmp(argv[i], "-h") == 0) return help();
+    }
+
+    char *command = argv[1];
+    if (strcmp(command, "build") == 0) {
+        return build();
+    } else if (strcmp(command, "run") == 0) {
+        return run();
+    } else if (strcmp(command, "new") == 0) {
+        ProjectScaffolder ps = {
+            .quiet = quiet,
+        };
+        
+        return new(ps, argv[1]);
+    } else {
+        fprintf(stderr, "unknown command '%s'", command);
+        return 1;
+    }
     
     return 0;
 }
