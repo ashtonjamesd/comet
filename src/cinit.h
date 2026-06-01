@@ -219,8 +219,7 @@ void cinit_build(Project *p) {
             " %s", get_optimize_name(p->optimize_level)
         );
 
-    printf("%s", cmd);
-    // system(cmd);
+    system(cmd);
 }
 
 static char *read_file(char *path) {
@@ -290,7 +289,7 @@ bool setup_build_c(char *path) {
         "\n"
         "void cinit_build_project(void) {\n"
         "   Project p = cinit_project();\n"
-        "   cinit_build_exe_called(&p, \"myprogram\");"
+        "   cinit_build_exe_called(&p, \"myprogram\");\n"
         "   cinit_build_with(&p, GCC);\n\n"
         "   cinit_optimize_with(&p, GCC_O3);\n"
         "   cinit_use_directory(&p, \"src\");\n\n"
