@@ -20,18 +20,28 @@ int version() {
 }
 
 int build() {
-    int built = system("gcc build.c -o project_build");
+    int built = system("gcc build.c -o _project_build");
     if (built == -1) {
         fprintf(stderr, "failed to build the build file.");
         return 1;
     }
 
-    int ran = system("./project_build");
+    int ran = system("./_project_build");
+    remove("_project_build");
     if (ran == -1) {
         fprintf(stderr, "failed to run the build file.");
         return 1;
     }
 
+    return 0;
+}
+
+int clean() {
+    system("rm -rf build");
+    system("rm -rf .cinit");
+    system("rm -f _project_build");
+    system("mkdir build");
+    printf("cleaned build artifacts.\n");
     return 0;
 }
 
@@ -110,6 +120,8 @@ int main(int argc, char *argv[]) {
     char *command = argv[1];
     if (strcmp(command, "build") == 0) {
         return build();
+    } else if (strcmp(command, "clean") == 0) {
+        return clean();
     } else if (strcmp(command, "run") == 0) {
         return run();
     } else if (strcmp(command, "new") == 0) {
