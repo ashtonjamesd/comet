@@ -373,8 +373,11 @@ bool comet_fetch_header(Project *p, char *repo, char *header) {
     // repo = ashtonjamesd/str
     // header = src/str.h
 
+    const char *filename = strrchr(header, '/');
+    filename = filename ? filename + 1 : header;
+
     char dest[512];
-    snprintf(dest, sizeof(dest), "lib/%s", header);
+    snprintf(dest, sizeof(dest), "lib/%s", filename);
 
     if (access(dest, F_OK) == 0) return true;
 
