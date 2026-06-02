@@ -47,18 +47,9 @@ typedef enum {
 } WarningFlags;
 
 typedef struct {
-    char *repo;
-    char *file;
-} Dependency;
-
-typedef struct {
     char **srcs;
     size_t srcs_count;
     size_t srcs_capacity;
-
-    Dependency *deps;
-    size_t deps_count;
-    size_t deps_capacity;
 
     Compiler compiler;
     OptimizeLevel optimize_level;
@@ -107,67 +98,6 @@ bool create_project_file(const char *path, ProjectScaffolder ps) {
     return create_file(path);
 }
 
-bool fetch_dependency(const char *url, const char *dest) {
-    char cmd[2048];
-    snprintf(cmd, sizeof(cmd), "curl -sfL \"%s\" -o \"%s\"", url, dest);
-
-    int result = system(cmd);
-    if (result != 0) {
-        fprintf(stderr, "failed to fetch dependency from '%s'\n", url);
-        return false;
-    }
-
-    return true;
-}
-
-void comet_require(Project *p, char *repo, char *file) {
-    if (p->deps_count == p->deps_capacity) {
-        p->deps_capacity *= 2;
-        p->deps = realloc(p->deps, sizeof(Dependency) * p->deps_capacity);
-    }
-
-    p->deps[p->deps_count].repo = repo;
-    p->deps[p->deps_count].file = file;
-    p->deps_count += 1;
-}
-
-void comet_require_repo(Project *p, char *repo) {
-    comet_require(p, repo, NULL);
-}
-
-bool setup_test_c(char *path) {
-FILE *main_file = fopen(path, "w");
-    if (!main_file) {
-        fprintf(stderr, "failed to setup '%s'", path);
-        return false;
-    }
-
-    char *content = 
-        "#include \"../lib/ctest.h\"\n"
-        "\n"
-        "should(correctly_add_two_numbers) {\n"
-        "   expect(2 + 5 == 7);\n"
-        "}\n"
-        "\n"
-        "int main(void) {\n"
-        "   // run a unit test\n"
-        "   run_test(correctly_add_two_numbers);\n"
-        "   conclude_test_runner();\n\n"
-        "   return 0;\n"
-        "}\n";
-
-    fwrite(
-        content,
-        1,
-        strlen(content),
-        main_file
-    );
-
-    fclose(main_file);
-
-    return true;
-}
-
 bool setup_main_c(char *path) {
     FILE *main_file = fopen(path, "w");
     if (!main_file) {
@@ -200,9 +130,6 @@ Project comet_project() {
         .srcs = malloc(sizeof(char *)),
         .srcs_count = 0,
         .srcs_capacity = 1,
-        .deps = malloc(sizeof(Dependency)),
-        .deps_count = 0,
-        .deps_capacity = 1,
         .compiler = GCC,
         .exe_name = "output",
     };
@@ -271,49 +198,8 @@ void comet_build_with(Project *p, Compiler compiler) {
     p->compiler = compiler;
 }
 
-bool comet_fetch_deps(Project *p) {
-    if (p->deps_count == 0) return true;
-
-    mkdir("lib", 0700);
-
-    for (size_t i = 0; i < p->deps_count; i++) {
-        if (p->deps[i].file) {
-            char url[1024];
-            snprintf(url, sizeof(url),
-                "https://raw.githubusercontent.com/%s/main/%s",
-                p->deps[i].repo, p->deps[i].file);
-
-            char dest[512];
-            snprintf(dest, sizeof(dest), "lib/%s", p->deps[i].file);
-
-            printf("fetching %s/%s -> %s\n", p->deps[i].repo, p->deps[i].file, dest);
-
-            if (!fetch_dependency(url, dest)) {
-                return false;
-            }
-        } else {
-            const char *repo = p->deps[i].repo;
-            const char *slash = strrchr(repo, '/');
-            const char *name = slash ? slash + 1 : repo;
-
-            char dest[512];
-            snprintf(dest, sizeof(dest), "lib/%s", name);
-
-            printf("cloning %s -> %s\n", repo, dest);
-
-            char cmd[2048];
-            snprintf(cmd, sizeof(cmd),
-                "git clone --depth 1 \"https://github.com/%s.git\" \"%s\"",
-                repo, dest);
-
-            if (system(cmd) != 0) {
-                fprintf(stderr, "failed to clone '%s'\n", repo);
-                return false;
-            }
-        }
-    }
-
-    return true;
+void comet_require(Project *p, char *github_url, char *version) {
+    // todo!
 }
 
 static const char *get_standard_name(CStandard standard) {
@@ -350,11 +236,6 @@ static char *get_compiler_name(Compiler compiler) {
 }
 
 void comet_build(Project *p) {
-    if (!comet_fetch_deps(p)) {
-        fprintf(stderr, "failed to fetch dependencies\n");
-        return;
-    }
-
     char cwd[1024];
     if (!getcwd(cwd, sizeof(cwd))) {
         fprintf(stderr, "failed to get current directory\n");
@@ -402,10 +283,6 @@ void comet_build(Project *p) {
         offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -pedantic");
     if (p->warnings & WARN_ERROR)
         offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -Werror");
-
-    if (p->deps_count > 0) {
-        offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -Ilib");
-    }
 
     if (p->cflags) {
         offset += snprintf(
