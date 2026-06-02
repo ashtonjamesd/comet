@@ -154,6 +154,10 @@ Project comet_project() {
         .srcs_count = 0,
         .srcs_capacity = 1,
         .compiler = GCC,
+        .optimize_level = GCC_O0,
+        .standard = C89,
+        .warnings = WARN_NONE,
+        .cflags = NULL,
         .exe_name = "output",
     };
 
@@ -311,7 +315,11 @@ int comet_build(Project *p) {
             );
     }
 
-    system(cmd);
+    int result = system(cmd);
+    if (result != 0) {
+        fprintf(stderr, "failed to build project");
+        return 1;
+    }
 
     mkdir("build/.comet", 0700);
     char last_build[2048];
@@ -344,8 +352,7 @@ bool comet_fetch_header(Project *p, char *repo, char *header) {
 
     printf("fetching %s -> %s\n", url, dest);
 
-    int result = system(cmd);
-    if (result == -1) {
+    if (system(cmd) != 0) {
         fprintf(stderr, "failed to fetch '%s' from '%s'\n", header, repo);
         return false;
     }

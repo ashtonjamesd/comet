@@ -42,7 +42,7 @@ int version() {
 
 int build() {
     int built = system(COMPILER " " BUILD_C " -o " BUILD_OUTPUT);
-    if (built == -1) {
+    if (built != 0) {
         fprintf(stderr, "failed to build the build file.");
         return 1;
     }
@@ -50,7 +50,7 @@ int build() {
     int ran = system("./" BUILD_OUTPUT " build");
     remove(BUILD_OUTPUT);
 
-    if (ran == -1) {
+    if (ran != 0) {
         fprintf(stderr, "failed to run the build file.");
         return 1;
     }
@@ -70,7 +70,7 @@ int clean() {
 
 int fetch() {
     int built = system(COMPILER " " BUILD_C " -o " BUILD_OUTPUT);
-    if (built == -1) {
+    if (built != 0) {
         fprintf(stderr, "failed to build the build file.");
         return 1;
     }
@@ -78,7 +78,7 @@ int fetch() {
     int ran = system("./" BUILD_OUTPUT " fetch");
     remove(BUILD_OUTPUT);
 
-    if (ran == -1) {
+    if (ran != 0) {
         fprintf(stderr, "failed to run the build file.");
         return 1;
     }
@@ -121,8 +121,7 @@ int run() {
     return system(exe_path);
 }
 
-int init(char *name) {
-    (void)name;
+int init() {
     printf("scaffolding project..\n\n");
 
     if (!create_project_directory(SRC)) return 1;
@@ -171,7 +170,7 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(command, "fetch") == 0) {
         return fetch();
     } else if (strcmp(command, "init") == 0) {
-        return init(argv[1]);
+        return init();
     } else {
         fprintf(stderr, "unknown command '%s'", command);
         return 1;

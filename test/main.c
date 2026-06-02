@@ -67,6 +67,7 @@ should(create_project_with_defaults) {
    expect(p.compiler == GCC);
    expect(p.srcs_count == 0);
    expect(p.srcs_capacity == 1);
+   expect_null(p.cflags);
    expect_str_eq(p.exe_name, "output");
 }
 
