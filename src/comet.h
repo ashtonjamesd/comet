@@ -10,10 +10,6 @@
 #include <dirent.h>
 #include <unistd.h>
 
-typedef struct {
-    bool quiet;
-} ProjectScaffolder;
-
 typedef enum {
     CLANG,
     GCC,
@@ -69,11 +65,8 @@ bool make_directory(const char *name) {
     return false;
 }
 
-bool create_project_directory(const char *name, ProjectScaffolder ps) {
-    if (!ps.quiet) {
-        printf("creating directory '%s'\n", name);
-    }
-
+bool create_project_directory(const char *name) {
+    printf("creating directory '%s'\n", name);
     return make_directory(name);
 }
 
@@ -90,11 +83,8 @@ bool create_file(const char *path) {
     return true;
 }
 
-bool create_project_file(const char *path, ProjectScaffolder ps) {
-    if (!ps.quiet) {
-        printf("creating file '%s'\n", path);
-    }
-
+bool create_project_file(const char *path) {
+    printf("creating file '%s'\n", path);
     return create_file(path);
 }
 

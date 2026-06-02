@@ -121,21 +121,21 @@ int run() {
     return system(exe_path);
 }
 
-int init(ProjectScaffolder ps, char *name) {
+int init(char *name) {
     printf("scaffolding project..\n\n");
 
-    if (!create_project_directory(SRC, ps)) return 1;
-    if (!create_project_directory(BUILD, ps)) return 1;
-    if (!create_project_directory(TEST, ps)) return 1;
-    if (!create_project_directory(LIB, ps)) return 1;
+    if (!create_project_directory(SRC)) return 1;
+    if (!create_project_directory(BUILD)) return 1;
+    if (!create_project_directory(TEST)) return 1;
+    if (!create_project_directory(LIB)) return 1;
 
-    if (!create_project_file(SRC "/" MAIN_C, ps)) return 1;
+    if (!create_project_file(SRC "/" MAIN_C)) return 1;
     if (!setup_main_c(SRC "/" MAIN_C)) return 1;
 
-    if (!create_project_file(TEST "/" MAIN_C, ps)) return 1;
+    if (!create_project_file(TEST "/" MAIN_C)) return 1;
     if (!setup_test_c(TEST "/" MAIN_C)) return 1;
 
-    if (!create_project_file(BUILD_C, ps)) return 1;
+    if (!create_project_file(BUILD_C)) return 1;
     if (!setup_build_c(BUILD_C)) return 1;
 
     printf("\ncompleted c project scaffold!\n\n");
@@ -148,12 +148,7 @@ int main(int argc, char *argv[]) {
         return version();
     }
 
-    bool quiet = false;
     for (int i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "--quiet") == 0) {
-            quiet = true;
-        }
-
         if (strcmp(argv[i], "help") == 0) return help();
         if (strcmp(argv[i], "--help") == 0) return help();
         if (strcmp(argv[i], "-h") == 0) return help();
@@ -175,11 +170,7 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(command, "fetch") == 0) {
         return fetch();
     } else if (strcmp(command, "init") == 0) {
-        ProjectScaffolder ps = {
-            .quiet = quiet,
-        };
-
-        return init(ps, argv[1]);
+        return init(argv[1]);
     } else {
         fprintf(stderr, "unknown command '%s'", command);
         return 1;
