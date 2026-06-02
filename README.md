@@ -2,7 +2,10 @@
 
 > **Warning:** comet is currently experimental and under active development. It is not recommended for use in production environments. APIs, commands, and behavior may change without notice.
 
-Build, scaffold, and run your C projects from C.
+<br/>
+<br/>
+
+Scaffold, build, and run your C projects from C.
 
 ## Install
 
@@ -84,6 +87,10 @@ comet_fetch_header("user/repo", "path/to/header.h");
 ```
 
 Running `comet fetch` will always re-fetch all dependencies, replacing any existing files in `lib/`. This ensures your dependencies stay up to date with the latest version from the remote repo.
+
+## Testing
+
+Comet projects come shipped with [ctest](https://github.com/ashtonjamesd/ctest), a lightweight single-header unit testing framework, fetched automatically into `lib/` during `comet init`. Tests live in `test/main.c` and are run with `comet test`.
 
 ## Commands
 

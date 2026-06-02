@@ -31,7 +31,6 @@ int help() {
     printf("  clean          remove all build artifacts\n");
     printf("\n");
     printf("options:\n");
-    printf("  --quiet        suppress output during scaffolding\n");
     printf("  --help, -h     show this help message\n");
     printf("  --version, -v  show version information\n");
     printf("\n");

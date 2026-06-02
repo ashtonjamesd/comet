@@ -367,7 +367,7 @@ bool comet_fetch_header(char *repo, char *header) {
         char del_command[512];
         snprintf(del_command, sizeof(del_command), "rm -rf %s", dest);
 
-        if (system(del_command)) {
+        if (system(del_command) != 0) {
             fprintf(stderr, "failed to delete and re-fetch dependency");
             return false;
         }

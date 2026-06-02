@@ -26,4 +26,4 @@ sudo cp src/comet.h /usr/local/include/comet.h
 rm -rf "$TMP"
 
 echo "comet installed to $INSTALL_DIR/comet"
-echo "header installed to $HEADER_DIR/comet.h"
+echo "header installed to /usr/local/include/comet.h"
