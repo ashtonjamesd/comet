@@ -1,5 +1,7 @@
 # comet
 
+> **Warning:** comet is currently experimental and under active development. It is not recommended for use in production environments. APIs, commands, and behavior may change without notice.
+
 Build, scaffold, and run your C projects from C.
 
 ## Install
@@ -80,6 +82,8 @@ Declare dependencies in `comet_fetch` to fetch header files from GitHub repos in
 ```c
 comet_fetch_header("user/repo", "path/to/header.h");
 ```
+
+Running `comet fetch` will always re-fetch all dependencies, replacing any existing files in `lib/`. This ensures your dependencies stay up to date with the latest version from the remote repo.
 
 ## Commands
 

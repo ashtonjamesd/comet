@@ -27,6 +27,7 @@ int help() {
     printf("  build          compile the project using build.c\n");
     printf("  run            build and run the executable\n");
     printf("  test           compile and run tests\n");
+    printf("  fetch          fetch dependencies into lib/\n");
     printf("  clean          remove all build artifacts\n");
     printf("\n");
     printf("options:\n");
