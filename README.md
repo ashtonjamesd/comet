@@ -1,6 +1,9 @@
 # comet
 
 > **Warning:** comet is currently experimental and under active development. It is not recommended for use in production environments. APIs, commands, and behavior may change without notice.
+***
+
+<br/>
 
 Build, scaffold, and run your C projects from C.
 
