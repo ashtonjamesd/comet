@@ -47,9 +47,18 @@ typedef enum {
 } WarningFlags;
 
 typedef struct {
+    char *repo;
+    char *file;
+} Dependency;
+
+typedef struct {
     char **srcs;
     size_t srcs_count;
     size_t srcs_capacity;
+
+    Dependency *deps;
+    size_t deps_count;
+    size_t deps_capacity;
 
     Compiler compiler;
     OptimizeLevel optimize_level;
@@ -111,6 +120,17 @@ bool fetch_dependency(const char *url, const char *dest) {
     return true;
 }
 
+void comet_require(Project *p, char *repo, char *file) {
+    if (p->deps_count == p->deps_capacity) {
+        p->deps_capacity *= 2;
+        p->deps = realloc(p->deps, sizeof(Dependency) * p->deps_capacity);
+    }
+
+    p->deps[p->deps_count].repo = repo;
+    p->deps[p->deps_count].file = file;
+    p->deps_count += 1;
+}
+
 bool setup_test_c(char *path) {
 FILE *main_file = fopen(path, "w");
     if (!main_file) {
@@ -124,6 +144,7 @@ FILE *main_file = fopen(path, "w");
         "should(correctly_add_two_numbers) {\n"
         "   expect(2 + 5 == 7);\n"
         "}\n"
+        "\n"
         "int main(void) {\n"
         "   // run a unit test\n"
         "   run_test(correctly_add_two_numbers);\n"
@@ -175,6 +196,9 @@ Project comet_project() {
         .srcs = malloc(sizeof(char *)),
         .srcs_count = 0,
         .srcs_capacity = 1,
+        .deps = malloc(sizeof(Dependency)),
+        .deps_count = 0,
+        .deps_capacity = 1,
         .compiler = GCC,
         .exe_name = "output",
     };
@@ -243,8 +267,28 @@ void comet_build_with(Project *p, Compiler compiler) {
     p->compiler = compiler;
 }
 
-void comet_require(Project *p, char *github_url, char *version) {
-    // todo!
+bool comet_fetch_deps(Project *p) {
+    if (p->deps_count == 0) return true;
+
+    mkdir("lib", 0700);
+
+    for (size_t i = 0; i < p->deps_count; i++) {
+        char url[512];
+        snprintf(url, sizeof(url),
+            "https://raw.githubusercontent.com/%s/main/%s",
+            p->deps[i].repo, p->deps[i].file);
+
+        char dest[512];
+        snprintf(dest, sizeof(dest), "lib/%s", p->deps[i].file);
+
+        printf("fetching %s/%s -> %s\n", p->deps[i].repo, p->deps[i].file, dest);
+
+        if (!fetch_dependency(url, dest)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 static const char *get_standard_name(CStandard standard) {
@@ -281,6 +325,11 @@ static char *get_compiler_name(Compiler compiler) {
 }
 
 void comet_build(Project *p) {
+    if (!comet_fetch_deps(p)) {
+        fprintf(stderr, "failed to fetch dependencies\n");
+        return;
+    }
+
     char cwd[1024];
     if (!getcwd(cwd, sizeof(cwd))) {
         fprintf(stderr, "failed to get current directory\n");
@@ -328,6 +377,10 @@ void comet_build(Project *p) {
         offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -pedantic");
     if (p->warnings & WARN_ERROR)
         offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -Werror");
+
+    if (p->deps_count > 0) {
+        offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -Ilib");
+    }
 
     if (p->cflags) {
         offset += snprintf(
