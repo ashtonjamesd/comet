@@ -75,7 +75,6 @@ int test() {
         return 1;
     }
 
-    printf("running tests...\n\n");
     int result = system("./" BUILD "/_test_runner");
     remove(BUILD "/_test_runner");
 
@@ -84,7 +83,6 @@ int test() {
         return 1;
     }
 
-    printf("\nall tests passed.\n");
     return 0;
 }
 

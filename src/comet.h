@@ -119,11 +119,15 @@ FILE *main_file = fopen(path, "w");
     }
 
     char *content = 
-        "#include <stdio.h>\n"
+        "#include \"lib/ctest.h\"\n"
         "\n"
+        "should(correctly_add_two_numbers) {\n"
+        "   expect(2 + 5 == 7);\n"
+        "}\n"
         "int main(void) {\n"
         "   // run a unit test\n"
-        "   run_test(correctly_add_two_numbers);\n\n"
+        "   run_test(correctly_add_two_numbers);\n"
+        "   conclude_test_runner();\n\n"
         "   return 0;\n"
         "}\n";
 
