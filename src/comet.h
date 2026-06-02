@@ -105,7 +105,7 @@ FILE *main_file = fopen(path, "w");
         "int main(void) {\n"
         "   // run a unit test\n"
         "   run_test(correctly_add_two_numbers);\n"
-        "   \n\n"
+        "   \n"
         "   return conclude_test_runner();\n"
         "}\n";
 

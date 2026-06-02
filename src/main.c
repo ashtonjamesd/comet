@@ -143,6 +143,11 @@ int init() {
 
     if (!setup_gitignore(".gitignore")) return 1;
 
+    if (system("comet fetch") != 0) {
+        fprintf(stderr, "failed to fetch initial dependencies");
+        return 1;
+    }
+
     printf("\ncompleted c project scaffold!\n\n");
 
     return 0;
