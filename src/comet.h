@@ -131,6 +131,10 @@ void comet_require(Project *p, char *repo, char *file) {
     p->deps_count += 1;
 }
 
+void comet_require_repo(Project *p, char *repo) {
+    comet_require(p, repo, NULL);
+}
+
 bool setup_test_c(char *path) {
 FILE *main_file = fopen(path, "w");
     if (!main_file) {
@@ -273,18 +277,39 @@ bool comet_fetch_deps(Project *p) {
     mkdir("lib", 0700);
 
     for (size_t i = 0; i < p->deps_count; i++) {
-        char url[512];
-        snprintf(url, sizeof(url),
-            "https://raw.githubusercontent.com/%s/main/%s",
-            p->deps[i].repo, p->deps[i].file);
+        if (p->deps[i].file) {
+            char url[1024];
+            snprintf(url, sizeof(url),
+                "https://raw.githubusercontent.com/%s/main/%s",
+                p->deps[i].repo, p->deps[i].file);
 
-        char dest[512];
-        snprintf(dest, sizeof(dest), "lib/%s", p->deps[i].file);
+            char dest[512];
+            snprintf(dest, sizeof(dest), "lib/%s", p->deps[i].file);
 
-        printf("fetching %s/%s -> %s\n", p->deps[i].repo, p->deps[i].file, dest);
+            printf("fetching %s/%s -> %s\n", p->deps[i].repo, p->deps[i].file, dest);
 
-        if (!fetch_dependency(url, dest)) {
-            return false;
+            if (!fetch_dependency(url, dest)) {
+                return false;
+            }
+        } else {
+            const char *repo = p->deps[i].repo;
+            const char *slash = strrchr(repo, '/');
+            const char *name = slash ? slash + 1 : repo;
+
+            char dest[512];
+            snprintf(dest, sizeof(dest), "lib/%s", name);
+
+            printf("cloning %s -> %s\n", repo, dest);
+
+            char cmd[2048];
+            snprintf(cmd, sizeof(cmd),
+                "git clone --depth 1 \"https://github.com/%s.git\" \"%s\"",
+                repo, dest);
+
+            if (system(cmd) != 0) {
+                fprintf(stderr, "failed to clone '%s'\n", repo);
+                return false;
+            }
         }
     }
 
