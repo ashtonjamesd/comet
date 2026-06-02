@@ -121,6 +121,29 @@ FILE *main_file = fopen(path, "w");
     return true;
 }
 
+bool setup_gitignore(char *path) {
+    char cmd[2048];
+    snprintf(cmd, sizeof(cmd),
+        "curl -sfL \"https://raw.githubusercontent.com/github/gitignore/main/C.gitignore\" -o \"%s\"",
+        path);
+
+    if (system(cmd) != 0) {
+        fprintf(stderr, "failed to fetch .gitignore template\n");
+        return false;
+    }
+
+    FILE *f = fopen(path, "a");
+    if (!f) {
+        fprintf(stderr, "failed to append to '%s'\n", path);
+        return false;
+    }
+
+    fprintf(f, "\n# Build output\nbuild/\n_project_build\n");
+    fclose(f);
+
+    return true;
+}
+
 bool setup_main_c(char *path) {
     FILE *main_file = fopen(path, "w");
     if (!main_file) {

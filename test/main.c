@@ -81,7 +81,5 @@ int main(void) {
    run_test(add_source_file);
    run_test(create_project_with_defaults);
 
-   conclude_test_runner();
-
-   return 0;
+   return conclude_test_runner();
 }

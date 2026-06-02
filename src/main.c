@@ -141,6 +141,8 @@ int init() {
     if (!create_project_file(BUILD_C)) return 1;
     if (!setup_build_c(BUILD_C)) return 1;
 
+    if (!setup_gitignore(".gitignore")) return 1;
+
     printf("\ncompleted c project scaffold!\n\n");
 
     return 0;
