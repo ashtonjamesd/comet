@@ -325,40 +325,6 @@ int comet_build(Project *p) {
     return 0;
 }
 
-static char *read_file(char *path) {
-    FILE *fptr = fopen((char *)path, "r");
-    if (!fptr) {
-        fprintf(stderr, "unable to open file: %s\n", path);
-        return NULL;
-    }
-
-    fseek(fptr, 0, SEEK_END);
-    long sz = ftell(fptr);
-    if (sz < 0) {
-        fclose(fptr);
-        return NULL;
-    }
-    rewind(fptr);
-
-    char *buf = malloc(sz + 1);
-    if (!buf) {
-        fclose(fptr);
-        return NULL;
-    }
-
-    size_t amountRead = fread(buf, 1, sz, fptr);
-    if ((long)amountRead != sz) {
-        fclose(fptr);
-        free(buf);
-        return NULL;
-    }
-
-    buf[sz] = '\0';
-    fclose(fptr);
-
-    return buf;
-}
-
 bool comet_fetch_header(Project *p, char *repo, char *header) {
     (void)p;
 
