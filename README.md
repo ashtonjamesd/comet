@@ -1,6 +1,9 @@
 # comet
 
 > **Warning:** comet is currently experimental and under active development. It is not recommended for use in production environments. APIs, commands, and behavior may change without notice.
+***
+
+<br/>
 
 <br/>
 <br/>
@@ -16,12 +19,7 @@ Scaffold, build, and run your C projects from C.
 ## Quick start
 
 ```bash
-comet init
-cd myapp
-
-comet fetch
-comet build
-comet run
+comet init && comet run
 ```
 
 ## Project structure
