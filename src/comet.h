@@ -108,18 +108,20 @@ bool setup_test_c(char *path) {
         return false;
     }
 
+    // int main(void) {
+    // return test_results();
+    // }
+
     char *content =
         "#include \"../lib/claim.h\"\n"
         "\n"
+        "describe(\"math\");\n"
         "should(correctly_add_two_numbers) {\n"
         "   expect(2 + 5 == 7);\n"
         "}\n"
         "\n"
         "int main(void) {\n"
-        "   // run a unit test\n"
-        "   run_test(correctly_add_two_numbers);\n"
-        "   \n"
-        "   return conclude_test_runner();\n"
+        "   return test_results();\n"
         "}\n";
 
     fwrite(
