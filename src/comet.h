@@ -42,7 +42,17 @@ typedef enum {
     WARN_ERROR   = 1 << 3,
 } WarningFlags;
 
+typedef struct Project Project;
+typedef int (*CometCommandFunc)(Project *p);
+
 typedef struct {
+    const char *name;
+    CometCommandFunc func;
+} CometCommand;
+
+#define COMET_MAX_COMMANDS 32
+
+struct Project {
     char **srcs;
     size_t srcs_count;
     size_t srcs_capacity;
@@ -53,7 +63,10 @@ typedef struct {
     int warnings;
     char *cflags;
     char *exe_name;
-} Project;
+
+    CometCommand commands[COMET_MAX_COMMANDS];
+    size_t command_count;
+};
 
 bool make_directory(const char *name) {
     if (mkdir(name, 0700) != -1) {
@@ -89,7 +102,7 @@ bool create_project_file(const char *path) {
 }
 
 bool setup_test_c(char *path) {
-FILE *main_file = fopen(path, "w");
+    FILE *main_file = fopen(path, "w");
     if (!main_file) {
         fprintf(stderr, "failed to setup '%s'", path);
         return false;
@@ -356,6 +369,28 @@ int comet_build(Project *p) {
     return 0;
 }
 
+void comet_command(Project *p, const char *name, CometCommandFunc func) {
+    if (p->command_count >= COMET_MAX_COMMANDS) {
+        fprintf(stderr, "too many commands registered\n");
+        return;
+    }
+    p->commands[p->command_count].name = name;
+    p->commands[p->command_count].func = func;
+    p->command_count++;
+}
+
+int comet_run(Project *p, int argc, char *argv[]) {
+    if (argc < 2) return 1;
+    const char *arg = argv[1];
+    for (size_t i = 0; i < p->command_count; i++) {
+        if (strcmp(arg, p->commands[i].name) == 0) {
+            return p->commands[i].func(p);
+        }
+    }
+    fprintf(stderr, "unknown command '%s'\n", arg);
+    return 1;
+}
+
 bool comet_fetch_header(char *repo, char *header) {
     const char *filename = strrchr(header, '/');
     filename = filename ? filename + 1 : header;
@@ -424,15 +459,12 @@ bool setup_build_c(char *path) {
         "int main(int argc, char *argv[]) {\n"
         "   if (argc < 2) return 1;\n"
         "   \n"
-        "   char *arg = argv[1];\n"
         "   Project p = comet_build_project();\n"
-        "   if (strcmp(arg, \"build\") == 0) {\n"
-        "       return comet_build(&p);\n"
-        "   } else if (strcmp(arg, \"fetch\") == 0) {\n"
-        "       return comet_fetch(&p);\n"
-        "   }\n"
-        "   \n"
-        "   return 0;\n"
+        "\n"
+        "   comet_command(&p, \"build\", comet_build);\n"
+        "   comet_command(&p, \"fetch\", comet_fetch);\n"
+        "\n"
+        "   return comet_run(&p, argc, argv);\n"
         "}\n";
 
     fwrite(

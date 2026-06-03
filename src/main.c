@@ -20,29 +20,6 @@
 
 #define LAST_BUILD_PATH "/.comet/last_build"
 
-int help() {
-    printf("usage: comet <command> [options]\n\n");
-    printf("commands:\n");
-    printf("  init            scaffold a new c project\n");
-    printf("  build          compile the project using build.c\n");
-    printf("  run            build and run the executable\n");
-    printf("  test           compile and run tests\n");
-    printf("  fetch          fetch dependencies into lib/\n");
-    printf("  clean          remove all build artifacts\n");
-    printf("\n");
-    printf("options:\n");
-    printf("  --help, -h     show this help message\n");
-    printf("  --version, -v  show version information\n");
-    printf("\n");
- 
-    return 0;
-}
-
-int version() {
-    printf("%s\n", APP_NAME_AND_VERSION);
-    return 0;
-}
-
 int build() {
     int built = system("gcc " BUILD_C " -o " BUILD_OUTPUT);
     if (built != 0) {
@@ -143,6 +120,7 @@ int init() {
 
     if (!setup_gitignore(".gitignore")) return 1;
 
+    // initial fetch for ctest.h
     if (system("comet fetch") != 0) {
         fprintf(stderr, "failed to fetch initial dependencies");
         return 1;
@@ -152,6 +130,30 @@ int init() {
 
     return 0;
 }
+
+int help() {
+    printf("usage: comet <command> [options]\n\n");
+    printf("commands:\n");
+    printf("  init            scaffold a new c project\n");
+    printf("  build          compile the project using build.c\n");
+    printf("  run            build and run the executable\n");
+    printf("  test           compile and run tests\n");
+    printf("  fetch          fetch dependencies into lib/\n");
+    printf("  clean          remove all build artifacts\n");
+    printf("\n");
+    printf("options:\n");
+    printf("  --help, -h     show this help message\n");
+    printf("  --version, -v  show version information\n");
+    printf("\n");
+ 
+    return 0;
+}
+
+int version() {
+    printf("%s\n", APP_NAME_AND_VERSION);
+    return 0;
+}
+
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
