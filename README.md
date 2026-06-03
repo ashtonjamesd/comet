@@ -44,7 +44,7 @@ Every project has a `build.c` that defines how it compiles and what dependencies
 
 Project comet_build_project(void) {
    Project p = comet_project();
-   
+
    comet_build_with(&p, GCC);
    comet_use_directory(&p, "src");
 
@@ -57,6 +57,17 @@ Project comet_build_project(void) {
 int comet_fetch(Project *p) {
    if (!comet_fetch_header("ashtonjamesd/ctest", "ctest.h")) return 1;
    return 0;
+}
+
+int main(int argc, char *argv[]) {
+   if (argc < 2) return 1;
+
+   Project p = comet_build_project();
+
+   comet_on_build(&p, comet_build);
+   comet_on_fetch(&p, comet_fetch);
+
+   return comet_run(&p, argc, argv);
 }
 ```
 
@@ -84,6 +95,40 @@ comet_fetch_header("user/repo", "path/to/header.h");
 
 Running `comet fetch` will always re-fetch all dependencies, replacing any existing files in `lib/`. This ensures your dependencies stay up to date with the latest version from the remote repo.
 
+### Custom commands
+
+You can register custom commands in `build.c` using `comet_command`. These are invoked the same way as built-in commands.
+
+```c
+int lint(Project *p) {
+   return system("cppcheck src/");
+}
+
+int main(int argc, char *argv[]) {
+   if (argc < 2) return 1;
+
+   Project p = comet_build_project();
+
+   comet_on_build(&p, comet_build);
+   comet_on_fetch(&p, comet_fetch);
+   comet_command(&p, "lint", lint);
+
+   return comet_run(&p, argc, argv);
+}
+```
+
+```bash
+comet lint
+```
+
+### Passing arguments
+
+Arguments passed after the command name are forwarded to the executable when using `comet run`.
+
+```bash
+comet run --verbose --port 8080
+```
+
 ## Testing
 
 Comet projects come shipped with [ctest](https://github.com/ashtonjamesd/ctest), a lightweight single-header unit testing framework, fetched automatically into `lib/` during `comet init`. Tests live in `test/main.c` and are run with `comet test`.
@@ -97,6 +142,8 @@ comet run           build and run the executable
 comet test          compile and run tests
 comet fetch         fetch dependencies into lib/
 comet clean         remove build artifacts
+
+comet <custom>      run a custom command registered in build.c
 ```
 
 ## License
