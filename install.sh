@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO="ashtonjamesd/c-init"
+REPO="ashtonjamesd/comet"
 INSTALL_DIR="/usr/local/bin"
 HEADER_DIR="/usr/local/include"
 
@@ -9,8 +9,8 @@ echo "installing comet..."
 
 # clone to a temp dir, build, install
 TMP=$(mktemp -d)
-git clone --depth 1 "https://github.com/$REPO.git" "$TMP/c-init"
-cd "$TMP/c-init"
+git clone --depth 1 "https://github.com/$REPO.git" "$TMP/comet"
+cd "$TMP/comet"
 
 cc src/main.c -o comet
 
