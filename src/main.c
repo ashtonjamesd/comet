@@ -84,7 +84,7 @@ int test() {
     return 0;
 }
 
-int run() {
+int run(int argc, char *argv[]) {
     int built = build();
     if (built != 0) return 1;
 
@@ -98,7 +98,13 @@ int run() {
     fread(exe_path, 1, sizeof(exe_path) - 1, f);
     fclose(f);
 
-    return system(exe_path);
+    char cmd[4096];
+    size_t offset = snprintf(cmd, sizeof(cmd), "%s", exe_path);
+    for (int i = 2; i < argc; i++) {
+        offset += snprintf(cmd + offset, sizeof(cmd) - offset, " %s", argv[i]);
+    }
+
+    return system(cmd);
 }
 
 int init() {
@@ -177,7 +183,7 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(command, "clean") == 0) {
         return clean();
     } else if (strcmp(command, "run") == 0) {
-        return run();
+        return run(argc, argv);
     } else if (strcmp(command, "test") == 0) {
         return test();
     } else if (strcmp(command, "fetch") == 0) {

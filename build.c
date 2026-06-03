@@ -27,10 +27,7 @@ int comet_something(Project *p) {
 int main(int argc, char *argv[]) {
    if (argc < 2) return 1;
    
-   char *arg = argv[1];
    Project p = comet_build_project();
-
-   comet_command(&p, "something", comet_something);
 
    comet_on_build(&p, comet_build);
    comet_on_fetch(&p, comet_fetch);
