@@ -369,6 +369,14 @@ int comet_build(Project *p) {
     return 0;
 }
 
+void comet_on_build(Project *p, CometCommandFunc func) {
+    comet_command(p, "build", func);
+}
+
+void comet_on_fetch(Project *p, CometCommandFunc func) {
+    comet_command(p, "fetch", func);
+}
+
 void comet_command(Project *p, const char *name, CometCommandFunc func) {
     if (p->command_count >= COMET_MAX_COMMANDS) {
         fprintf(stderr, "too many commands registered\n");
@@ -462,10 +470,10 @@ bool setup_build_c(char *path) {
         "   if (argc < 2) return 1;\n"
         "   \n"
         "   Project p = comet_build_project();\n"
-        "\n"
-        "   comet_command(&p, \"build\", comet_build);\n"
-        "   comet_command(&p, \"fetch\", comet_fetch);\n"
-        "\n"
+        "   \n"
+        "   comet_on_build(&p, comet_build);\n"
+        "   comet_on_build(&p, comet_fetch);\n"
+        "   \n"
         "   return comet_run(&p, argc, argv);\n"
         "}\n";
 
