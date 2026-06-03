@@ -109,7 +109,7 @@ bool setup_test_c(char *path) {
     }
 
     char *content =
-        "#include \"../lib/ctest.h\"\n"
+        "#include \"../lib/claim.h\"\n"
         "\n"
         "should(correctly_add_two_numbers) {\n"
         "   expect(2 + 5 == 7);\n"

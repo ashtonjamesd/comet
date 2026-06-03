@@ -1,11 +1,11 @@
-#include "../lib/ctest.h"
+#include "../lib/claim.h"
 #include "../src/comet.h"
 
 should(set_exe_name) {
    Project p = comet_project();
 
    comet_build_exe_called(&p, "myapp");
-   expect_str_eq(p.exe_name, "myapp");
+   expect_eq(p.exe_name, "myapp");
 }
 
 should(set_compiler) {
@@ -29,7 +29,7 @@ should(set_cflags) {
    Project p = comet_project();
 
    comet_cflags(&p, "-DDEBUG");
-   expect_str_eq(p.cflags, "-DDEBUG");
+   expect_eq(p.cflags, "-DDEBUG");
 }
 
 should(set_warnings) {
@@ -58,7 +58,7 @@ should(add_source_file) {
    comet_add_source_file(&p, "src/main.c");
 
    expect(p.srcs_count == 1);
-   expect_str_eq(p.srcs[0], "src/main.c");
+   expect_eq(p.srcs[0], "src/main.c");
 }
 
 should(create_project_with_defaults) {
@@ -68,7 +68,7 @@ should(create_project_with_defaults) {
    expect(p.srcs_count == 0);
    expect(p.srcs_capacity == 1);
    expect_null(p.cflags);
-   expect_str_eq(p.exe_name, "output");
+   expect_eq(p.exe_name, "output");
    expect(p.command_count == 0);
 }
 
@@ -87,7 +87,7 @@ should(register_single_command) {
    comet_command(&p, "build", dummy_cmd);
 
    expect(p.command_count == 1);
-   expect_str_eq(p.commands[0].name, "build");
+   expect_eq(p.commands[0].name, "build");
    expect(p.commands[0].func == dummy_cmd);
 }
 
@@ -97,8 +97,8 @@ should(register_multiple_commands) {
    comet_command(&p, "fetch", another_cmd);
 
    expect(p.command_count == 2);
-   expect_str_eq(p.commands[0].name, "build");
-   expect_str_eq(p.commands[1].name, "fetch");
+   expect_eq(p.commands[0].name, "build");
+   expect_eq(p.commands[1].name, "fetch");
    expect(p.commands[1].func == another_cmd);
 }
 
@@ -131,19 +131,5 @@ should(run_with_no_args_returns_error) {
 }
 
 int main(void) {
-   run_test(set_exe_name);
-   run_test(set_compiler);
-   run_test(set_standard);
-   run_test(set_cflags);
-   run_test(set_warnings);
-   run_test(grow_sources_on_overflow);
-   run_test(add_source_file);
-   run_test(create_project_with_defaults);
-   run_test(register_single_command);
-   run_test(register_multiple_commands);
-   run_test(run_matched_command);
-   run_test(run_unknown_command_returns_error);
-   run_test(run_with_no_args_returns_error);
-
-   return conclude_test_runner();
+   return test_results();
 }

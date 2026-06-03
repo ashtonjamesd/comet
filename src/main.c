@@ -126,7 +126,7 @@ int init() {
 
     if (!setup_gitignore(".gitignore")) return 1;
 
-    // initial fetch for ctest.h
+    // initial fetch for claim.h
     if (system("comet fetch") != 0) {
         fprintf(stderr, "failed to fetch initial dependencies");
         return 1;

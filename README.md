@@ -55,7 +55,7 @@ Project comet_build_project(void) {
 }
 
 int comet_fetch(Project *p) {
-   if (!comet_fetch_header("ashtonjamesd/ctest", "ctest.h")) return 1;
+   if (!comet_fetch_header("ashtonjamesd/claim", "claim.h")) return 1;
    return 0;
 }
 
@@ -131,7 +131,7 @@ comet run --verbose --port 8080
 
 ## Testing
 
-Comet projects come shipped with [ctest](https://github.com/ashtonjamesd/ctest), a lightweight single-header unit testing framework, fetched automatically into `lib/` during `comet init`. Tests live in `test/main.c` and are run with `comet test`.
+Comet projects come shipped with [claim](https://github.com/ashtonjamesd/claim), a lightweight single-header unit testing framework, fetched automatically into `lib/` during `comet init`. Tests live in `test/main.c` and are run with `comet test`.
 
 ## Commands
 

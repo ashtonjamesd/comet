@@ -15,7 +15,7 @@ Project comet_build_project(void) {
 }
 
 int comet_fetch(Project *p) {
-   if (!comet_fetch_header("ashtonjamesd/ctest", "ctest.h")) return 1;
+   if (!comet_fetch_header("ashtonjamesd/claim", "claim.h")) return 1;
    return 0;
 }
 
