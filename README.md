@@ -28,6 +28,7 @@ comet init && comet run
 ├── build.c        # build configuration and dependency declarations
 ├── .gitignore     # C gitignore template
 ├── src/
+│   ├── common.h   # common libc headers
 │   └── main.c     # entry point
 ├── test/
 │   └── main.c     # test entry point
